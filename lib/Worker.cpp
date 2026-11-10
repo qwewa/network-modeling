@@ -121,7 +121,7 @@ void Worker::run(const vector<unique_ptr<Worker>>& all_workers,
         while (true) {
             auto node_id = pop_local();
 
-            // if (!node_id) node_id = steal(all_workers);
+            if (!node_id) node_id = steal(all_workers);
 
             if (node_id) {
                 WorkerResult current_res = evaluate_node(*current_task, *node_id);

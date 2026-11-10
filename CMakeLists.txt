@@ -4,15 +4,14 @@ project(DistributedScheduler)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# ===== JSON =====
-include(FetchContent)
+# ===== OPENMP FOR macOS (Homebrew) =====
+if(APPLE)
+    set(OpenMP_ROOT "/opt/homebrew/opt/libomp")
+endif()
 
-FetchContent_Declare(
-    nlohmann_json
-    URL https://github.com/nlohmann/json/releases/download/v3.11.3/json.tar.xz
-)
-
-FetchContent_MakeAvailable(nlohmann_json)
+# ===== DEPENDENCIES =====
+find_package(OpenMP REQUIRED)
+find_package(nlohmann_json REQUIRED)
 
 # ===== LIBRARY =====
 add_library(core
@@ -21,12 +20,13 @@ add_library(core
     lib/Resource.cpp
     lib/Scheduler.cpp
     lib/Worker.cpp
+    src/openmp.cpp
 )
 
 target_include_directories(core PUBLIC lib)
 
-# Линкуем json
-target_link_libraries(core PUBLIC nlohmann_json::nlohmann_json)
+# Линкуем библиотеки
+target_link_libraries(core PUBLIC nlohmann_json::nlohmann_json OpenMP::OpenMP_CXX)
 
 # ===== EXECUTABLE =====
 add_executable(main src/main.cpp)
